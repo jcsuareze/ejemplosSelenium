@@ -1,5 +1,10 @@
 package ejemplosPruebas.links;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.time.Duration;
 import java.util.List;
 
@@ -12,7 +17,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class LinksRotos {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		WebDriverManager.chromedriver().setup();
 
@@ -36,9 +41,25 @@ public class LinksRotos {
 			System.out.println(valorAtribHref);
 			if (valorAtribHref==null || valorAtribHref.isEmpty() ) {
 
-				System.out.println("Vacio");
+				System.out.println("El attributo href esta vacio");
+				continue;
 			}
-
+			//Convertirlo de String a URL para poder accesar
+			URL linkurl = new URL(valorAtribHref);
+			
+			//envia request al server  -abre la conexion y se conecta
+			HttpURLConnection conn=(HttpURLConnection) linkurl.openConnection();
+			
+			conn.connect();
+			if(conn.getResponseCode()>=400) {
+				System.out.println(valorAtribHref+ "      Link roto");
+				numeroLinksRotos++;
+			}
+			else
+			{
+				System.out.println(valorAtribHref+ "      Link No roto");
+			}
 		}
+		System.out.println("Numero de links rotos es: "+ numeroLinksRotos);
 	}
 }
